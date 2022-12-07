@@ -1,0 +1,66 @@
+Mongo DB class assignment
+
+# importing pandas libraries 
+%pip install pandas 
+import pandas as pd
+
+# reading the file from the github using pandas
+data = pd.read_csv("https://raw.githubusercontent.com/vigneshk/Admission-Dataset/master/Admission.csv")
+
+# printing shape of the data 
+print("No. of col {0} and number of rows{1}".format(data.shape[0],data.shape[1])
+output: - "No. of col 400 and number of rows 9"
+
+#we will convert dataframe into dictionery as mongodb take data in the form of json
+data_new_dic = data.to_dict('records')
+
+# printing a few records
+data_new_dic
+
+[{'Serial No.': 1,
+  'GRE Score': 337,
+  'TOEFL Score': 118,
+  'University Rating': 4,
+  'SOP': 4.5,
+  'LOR ': 4.5,
+  'CGPA': 9.65,
+  'Research': 1,
+  'Chance of Admit ': 0.92},
+ {'Serial No.': 2,
+  'GRE Score': 324,
+  'TOEFL Score': 107,
+  'University Rating': 4,
+  'SOP': 4.0,
+  'LOR ': 4.5,
+  'CGPA': 8.87,
+  'Research': 1,
+  'Chance of Admit ': 0.76}
+
+# creating mongo client 
+import pymongo
+mongo_con = pymongo.MongoClient("mongodb://localhost:27017/")
+
+# creating database
+database = mongo_con["load_csv_db"]
+
+#Creating collection 
+load_csv_coll = database["load_csv_collection"]
+
+# loading data to mongo collection 
+load_csv_coll.insert_many(data_new_dic)
+
+
+mongo_records = load_csv_coll.find({}).limit(10)
+
+for i in mongo_records:
+    print(i)
+
+{'_id': ObjectId('638ecab5975ed6df584c5353'), 'index': 0, 'Serial No.': 1, 'GRE Score': 337, 'TOEFL Score': 118, 'University Rating': 4, 'SOP': 4.5, 'LOR ': 4.5, 'CGPA': 9.65, 'Research': 1, 'Chance of Admit ': 0.92}
+{'_id': ObjectId('638ecab5975ed6df584c5354'), 'index': 1, 'Serial No.': 2, 'GRE Score': 324, 'TOEFL Score': 107, 'University Rating': 4, 'SOP': 4.0, 'LOR ': 4.5, 'CGPA': 8.87, 'Research': 1, 'Chance of Admit ': 0.76}
+{'_id': ObjectId('638ecab5975ed6df584c5355'), 'index': 2, 'Serial No.': 3, 'GRE Score': 316, 'TOEFL Score': 104, 'University Rating': 3, 'SOP': 3.0, 'LOR ': 3.5, 'CGPA': 8.0, 'Research': 1, 'Chance of Admit ': 0.72}
+{'_id': ObjectId('638ecab5975ed6df584c5356'), 'index': 3, 'Serial No.': 4, 'GRE Score': 322, 'TOEFL Score': 110, 'University Rating': 3, 'SOP': 3.5, 'LOR ': 2.5, 'CGPA': 8.67, 'Research': 1, 'Chance of Admit ': 0.8}
+{'_id': ObjectId('638ecab5975ed6df584c5357'), 'index': 4, 'Serial No.': 5, 'GRE Score': 314, 'TOEFL Score': 103, 'University Rating': 2, 'SOP': 2.0, 'LOR ': 3.0, 'CGPA': 8.21, 'Research': 0, 'Chance of Admit ': 0.65}
+{'_id': ObjectId('638ecab5975ed6df584c5358'), 'index': 5, 'Serial No.': 6, 'GRE Score': 330, 'TOEFL Score': 115, 'University Rating': 5, 'SOP': 4.5, 'LOR ': 3.0, 'CGPA': 9.34, 'Research': 1, 'Chance of Admit ': 0.9}
+{'_id': ObjectId('638ecab5975ed6df584c5359'), 'index': 6, 'Serial No.': 7, 'GRE Score': 321, 'TOEFL Score': 109, 'University Rating': 3, 'SOP': 3.0, 'LOR ': 4.0, 'CGPA': 8.2, 'Research': 1, 'Chance of Admit ': 0.75}
+{'_id': ObjectId('638ecab5975ed6df584c535a'), 'index': 7, 'Serial No.': 8, 'GRE Score': 308, 'TOEFL Score': 101, 'University Rating': 2, 'SOP': 3.0, 'LOR ': 4.0, 'CGPA': 7.9, 'Research': 0, 'Chance of Admit ': 0.68}
+{'_id': ObjectId('638ecab5975ed6df584c535b'), 'index': 8, 'Serial No.': 9, 'GRE Score': 302, 'TOEFL Score': 102, 'University Rating': 1, 'SOP': 2.0, 'LOR ': 1.5, 'CGPA': 8.0, 'Research': 0, 'Chance of Admit ': 0.5}
